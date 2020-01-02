@@ -2,69 +2,70 @@
 %option noyywrap
 
 %{
+#include "AST.h"
 #include "syntax.tab.h"
 %}
 
 %%
 
 
-if	{return(IF);}
+if	{yylval.node = new_node("IF",0,yylineno);   return(IF);}
 
-else	{return(ELSE);}
+else	{yylval.node = new_node("ELSE",0,yylineno); return(ELSE);}
 
-int	{return(INT);}
+int	{yylval.node = new_node("INT",0,yylineno); return(INT);}
 
-return	{return(RETURN);}
+return	{yylval.node = new_node("RETURN",0,yylineno); return(RETURN);}
 
-void	{return(VOID);}
+void	{yylval.node = new_node("VOID",0,yylineno); return(VOID);}
 
-while	{return(WHILE);}
+while	{yylval.node = new_node("WHILE",0,yylineno); return(WHILE);}
 
 
-"+"	{return('+');}
+"+"	{yylval.node = new_node("+",0,yylineno); return('+');}
 
-"-"	{return('-');}
+"-"	{yylval.node = new_node("-",0,yylineno); return('-');}
 
-"*"	{return('*');}
+"*"	{yylval.node = new_node("*",0,yylineno); return('*');}
 
-"/"	{return('/');}
+"/"	{yylval.node = new_node("/",0,yylineno); return('/');}
 
-"<"	{return('<');}
+"<"	{yylval.node = new_node("<",0,yylineno); return('<');}
 
-"<="	{return(BE);}
+"<="	{yylval.node = new_node("BE",0,yylineno); return(BE);}
 
-">"	{return('>');}
+">"	{yylval.node = new_node(">",0,yylineno); return('>');}
 
-">="	{return(AE);}
+">="	{yylval.node = new_node(">=",0,yylineno); return(AE);}
 
-"=="	{return(EQ);}
+"=="	{yylval.node = new_node("EQ",0,yylineno); return(EQ);}
 
-"!="	{return(NE);}
+"!="	{yylval.node = new_node("NE",0,yylineno); return(NE);}
 
-"="	{return('=');}
+"="	{yylval.node = new_node("=",0,yylineno); return('=');}
 
-";"	{return(';');}
+";"	{yylval.node = new_node(";",0,yylineno); return(';');}
 
-","	{return(',');}
+","	{yylval.node = new_node(",",0,yylineno); return(',');}
 
-"("	{return('(');}
+"("	{yylval.node = new_node("(",0,yylineno); return('(');}
 
-")"	{return(')');}
+")"	{yylval.node = new_node(")",0,yylineno); return(')');}
 
-"["	{return('[');}
+"["	{yylval.node = new_node("[",0,yylineno); return('[');}
 
-"]"	{return(']');}
+"]"	{yylval.node = new_node("]",0,yylineno); return(']');}
 
-"{"	{return('{');}
+"{"	{yylval.node = new_node("{",0,yylineno); return('{');}
 
-"}"	{return('}');}
+"}"	{yylval.node = new_node("}",0,yylineno); return('}');}
 
 
 "//"[^\n]*    					    { }//忽略注释
 "/*"(([^\*]*(\*[^\/])?)*)"*/"		{ }//忽略注释
 [\n \t]	{ }	//忽略空白
 
-[a-zA-Z]+	{return(ID);}
-[0-9]+		{return(NUM);}
+[a-zA-Z]+	{yylval.node = new_node("ID",0,yylineno); return(ID);}
+[0-9]+		{yylval.node = new_node("NUM",0,yylineno); return(NUM);}
 
 %%
