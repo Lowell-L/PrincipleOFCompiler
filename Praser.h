@@ -8,54 +8,54 @@ using namespace std;
 class Praser {
 public:
 	
-	int varNum = 0; 	//ÁÙÊ±±äÁ¿¸öÊı
-	int tempNum = 0; 	//±äÁ¿¸öÊı
-	int labelNum = 0; 	//±êÇ©ºÅ
-	vector<string> codeList; //ÖĞ¼ä´úÂë
+	int varNum = 0; 	//ä¸´æ—¶å˜é‡ä¸ªæ•°
+	int tempNum = 0; 	//å˜é‡ä¸ªæ•°
+	int labelNum = 0; 	//æ ‡ç­¾å·
+	vector<string> codeList; //ä¸­é—´ä»£ç 
 
-//	AsmCode asmcode; 	//x86´úÂëÉú³É¶ÔÏó
+//	AsmCode asmcode; 	//x86ä»£ç ç”Ÿæˆå¯¹è±¡
 
-	map<string, funcNode> funcPool;		//º¯Êı³Ø£¨º¯ÊıÃû--> º¯Êı½áµã£©
-	map<string, string> labelPool;  	//±êÇ©Ó³Éä¹ØÏµ£¨Í³Ò»°Ñ±êÇ©Ó³ÉäÎªlable_iµÄĞÎÊ½£©
-	vector<struct Block> blockStack;	//Î¬»¤µÄ´úÂë¿éÕ»
+	map<string, funcNode> funcPool;		//å‡½æ•°æ± ï¼ˆå‡½æ•°å--> å‡½æ•°ç»“ç‚¹ï¼‰
+	map<string, string> labelPool;  	//æ ‡ç­¾æ˜ å°„å…³ç³»ï¼ˆç»Ÿä¸€æŠŠæ ‡ç­¾æ˜ å°„ä¸ºlable_içš„å½¢å¼ï¼‰
+	vector<struct Block> blockStack;	//ç»´æŠ¤çš„ä»£ç å—æ ˆ
 
 	struct AST* root;
 
 	Praser(AST*);
 	void praserInit();
 	void praserAST(struct AST* node);
-	void Praser::praser_fun_declaration(struct AST* node);
-	void Praser::praser_param_list(struct AST* node,string funcName);
-	void Praser::praser_param(struct AST* node, string funcName);
-	void Praser::praser_compound_stmt(struct AST* node);
-	void Praser::praser_var_declaration(struct AST *node);
-	void Praser::praser_statement(struct AST* node);
-	void Praser::praser_expression_stmt(struct AST *node);
-	void Praser::praser_selection_stmt(struct AST* node);
-	varNode Praser::praser_expression(struct AST* node);
-	void Praser::praser_iteration_stmt(struct AST* node);
-	void Praser::praser_return_stmt(struct AST* node);
-	varNode Praser::praser_assignment_expression(struct AST* assign_exp);
-	varNode Praser::praser_var(struct AST* primary_exp);
-	varNode Praser::praser_simple_expression(struct AST* assign_exp);
-	varNode Praser::praser_relop(varNode additive_expression_1, AST* relop, varNode additive_expression_2);
-	varNode Praser::praser_additive_expression(struct AST* assign_exp);
-	varNode Praser::praser_addop(varNode additive_expression, AST* addop, varNode term);
-	varNode Praser::praser_term(struct AST* assign_exp);
-	varNode Praser::praser_mulop(varNode term, AST* mulop, varNode factor);
-	varNode Praser::praser_factor(struct AST* assign_exp);
-	varNode Praser::praser_call(struct AST* call_exp);
-	void Praser::praser_argument_expression_list(struct AST* node, string funcName);
+	void praser_fun_declaration(struct AST* node);
+	void praser_param_list(struct AST* node,string funcName);
+	void praser_param(struct AST* node, string funcName);
+	void praser_compound_stmt(struct AST* node);
+	void praser_var_declaration(struct AST *node);
+	void praser_statement(struct AST* node);
+	void praser_expression_stmt(struct AST *node);
+	void praser_selection_stmt(struct AST* node);
+	varNode praser_expression(struct AST* node);
+	void praser_iteration_stmt(struct AST* node);
+	void praser_return_stmt(struct AST* node);
+	varNode praser_assignment_expression(struct AST* assign_exp);
+	varNode praser_var(struct AST* primary_exp);
+	varNode praser_simple_expression(struct AST* assign_exp);
+	varNode praser_relop(varNode additive_expression_1, AST* relop, varNode additive_expression_2);
+	varNode praser_additive_expression(struct AST* assign_exp);
+	varNode praser_addop(varNode additive_expression, AST* addop, varNode term);
+	varNode praser_term(struct AST* assign_exp);
+	varNode praser_mulop(varNode term, AST* mulop, varNode factor);
+	varNode praser_factor(struct AST* assign_exp);
+	varNode praser_call(struct AST* call_exp);
+	void praser_argument_expression_list(struct AST* node, string funcName);
 
-	varNode Praser::createTempVar(string name, string type);
-	struct varNode Praser::lookupNode(string name);
-	void Praser::addCode(string str);
-	void Praser::print_code();
-	string Praser::getFuncRType();
-	string Praser::getLabelName();
-	string Praser::getNodeName(varNode node);
-	string Praser::Gen_IR(string tempname, string op, varNode node1, varNode node2);
-	void Praser::error(int line, string error);
+	varNode createTempVar(string name, string type);
+	struct varNode lookupNode(string name);
+	void addCode(string str);
+	void print_code();
+	string getFuncRType();
+	string getLabelName();
+	string getNodeName(varNode node);
+	string Gen_IR(string tempname, string op, varNode node1, varNode node2);
+	void error(int line, string error);
 	
 };
 

@@ -232,7 +232,7 @@ int main(int argc, char *argv[])
 	print_AST(root,0);
 	printf("-----------------------print_AST_end--------------------------\n");
 
-//	Praser praser(root);
+	Praser praser(root);
 	fclose(yyin);
 	return 0;
 }

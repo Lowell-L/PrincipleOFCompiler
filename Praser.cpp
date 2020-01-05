@@ -2,7 +2,7 @@
 
 using namespace std;
 
-Praser::Praser(AST* root) {//¹¹Ôìº¯Êı
+Praser::Praser(AST* root) {//æ„é€ å‡½æ•°
 	this->root = root;
 	praserInit();
 	printf("---------------------debug_info_end---------------------------\n");
@@ -13,11 +13,11 @@ Praser::Praser(AST* root) {//¹¹Ôìº¯Êı
 	printf("--------------------objcoed_gen_end---------------------------\n");
 }
 
-void Praser::praserInit() { //³õÊ¼»¯
-	Block wholeBlock; 		//´´½¨Õû¸ö³ÌĞòµÄ´úÂë¿éĞÅÏ¢£¨È«¾Ö£©
+void Praser::praserInit() { //åˆå§‹åŒ–
+	Block wholeBlock; 		//åˆ›å»ºæ•´ä¸ªç¨‹åºçš„ä»£ç å—ä¿¡æ¯ï¼ˆå…¨å±€ï¼‰
 	blockStack.push_back(wholeBlock);  
 	
-	//¼ÓÈëÄÚÖÃº¯Êı input£º¶ÁÈëÒ»¸öint ²¢·µ»Ø  output£º´òÓ¡Ò»¸öintÖµ
+	//åŠ å…¥å†…ç½®å‡½æ•° inputï¼šè¯»å…¥ä¸€ä¸ªint å¹¶è¿”å›  outputï¼šæ‰“å°ä¸€ä¸ªintå€¼
 	funcNode output;
 	output.name = "output";
 	output.rtype = "void";
@@ -31,7 +31,7 @@ void Praser::praserInit() { //³õÊ¼»¯
 	input.rtype = "input";
 	funcPool.insert({"input",input});
 
-	praserAST(root);		//¿ªÊ¼·ÖÎöÓï·¨Ê÷
+	praserAST(root);		//å¼€å§‹åˆ†æè¯­æ³•æ ‘
 
 	blockStack.pop_back();
 }
@@ -39,82 +39,82 @@ void Praser::praserInit() { //³õÊ¼»¯
 void Praser::praserAST(struct AST* node) {
 	if (node == NULL)
 		return;
-	else if (node->type == "fun-declaration") { //½âÎöº¯Êı
+	else if (node->type == "fun-declaration") { //è§£æå‡½æ•°
 		praser_fun_declaration(node);
 		return;
 	}
-	else if (node->type == "var-declaration") {	//½âÎö±äÁ¿
+	else if (node->type == "var-declaration") {	//è§£æå˜é‡
 		praser_var_declaration(node);
 		return;
 	}
-	else if (node->type == "statement") {		//½âÎöÓï¾ä
+	else if (node->type == "statement") {		//è§£æè¯­å¥
 		praser_statement(node);
 		return;
 	}  
-	else{	//¼ÌĞøÏòÏÂµİ¹é·ÖÎö
+	else{	//ç»§ç»­å‘ä¸‹é€’å½’åˆ†æ
 		praserAST(node->left);
 		praserAST(node->right);
 	}
 }
 
-//¹æÔò 6¡¢7	½âÎöº¯Êı¶¨Òå
+//è§„åˆ™ 6ã€7	è§£æå‡½æ•°å®šä¹‰
 void Praser::praser_fun_declaration(struct AST* node) {
-	AST* type_specifier;			//·µ»ØÀàĞÍ½áµã
+	AST* type_specifier;			//è¿”å›ç±»å‹ç»“ç‚¹
 	type_specifier = node->left;
 	
-	AST* ID = node->left->right;	//º¯ÊıÃû³Æ½áµã
+	AST* ID = node->left->right;	//å‡½æ•°åç§°ç»“ç‚¹
 
 	AST* compound_stmt = ID->right->right->right->right;
 	
-	string funcType = type_specifier->left->text;	//·µ»ØÖµÀàĞÍ
+	string funcType = type_specifier->left->text;	//è¿”å›å€¼ç±»å‹
 
-	string funcName = ID->text;				//º¯ÊıÃû
+	string funcName = ID->text;				//å‡½æ•°å
 	
-	funcNode declarFunc;					//º¯Êı½áµã
+	funcNode declarFunc;					//å‡½æ•°ç»“ç‚¹
 
 	if (funcPool.find(funcName) != funcPool.end()) {
-		//¸Ãº¯ÊıÃûÔÚfuncPoolÖĞÕÒµ½£¬º¯ÊıÖØ¸´¶¨Òå
-		error(ID->line, "º¯ÊıÖØ¸´¶¨Òå£º" + funcName );
+		//è¯¥å‡½æ•°ååœ¨funcPoolä¸­æ‰¾åˆ°ï¼Œå‡½æ•°é‡å¤å®šä¹‰
+		error(ID->line, "å‡½æ•°é‡å¤å®šä¹‰ï¼š" + funcName );
 	}
 
 	Block funBlock;
 	funBlock.isfunc = true;
 	funBlock.func.name = funcName;
 	funBlock.func.rtype = funcType;
-	//½«º¯Êı¼ÇÂ¼ÔÚ¿éÄÚ²¢Ìí¼Óµ½º¯Êı³Ø
+	//å°†å‡½æ•°è®°å½•åœ¨å—å†…å¹¶æ·»åŠ åˆ°å‡½æ•°æ± 
 	blockStack.push_back(funBlock);
 	funcPool.insert({funcName,funBlock.func});
 
-	cout<<"Debug:³É¹¦´´½¨BlockºÍ²åÈëÁËfuncPool,º¯Êı£º"<<funcName<<endl;
+	cout<<"Debug:æˆåŠŸåˆ›å»ºBlockå’Œæ’å…¥äº†funcPool,å‡½æ•°ï¼š"<<funcName<<endl;
 
-	//ÖĞ¼ä´úÂë
+	//ä¸­é—´ä»£ç 
 	addCode("FUNC " + funcName + ":");
 
-	//»ñÈ¡º¯ÊıĞÎ²ÎÁĞ±í
+	//è·å–å‡½æ•°å½¢å‚åˆ—è¡¨
 	if(ID->right->right->left->type == "param-list"){
-		cout<<"Debug:¿ªÊ¼½âÎöÒ»¸ö´ø²ÎÊı£¨param-list£©µÄ function"<<endl;
+		cout<<"Debug:å¼€å§‹è§£æä¸€ä¸ªå¸¦å‚æ•°ï¼ˆparam-listï¼‰çš„ function"<<endl;
 		praser_param_list(ID->right->right->left, funcName);
-		cout<<"Debug:²ÎÊı½âÎöÍê±Ï"<<endl;
+		cout<<"Debug:å‚æ•°è§£æå®Œæ¯•"<<endl;
 	}
 	else
 	{
-		//²ÎÊıÁĞ±í VOID ÎŞĞè½âÎö²ÎÊıÁĞ±í
+		//å‚æ•°åˆ—è¡¨ VOID æ— éœ€è§£æå‚æ•°åˆ—è¡¨
 	}
 	
-	//´ËÊ±º¯Êı³ØÖĞµÄfuncÒÑ¾­Ìí¼ÓÁË²ÎÊıÁĞ±í
+	//æ­¤æ—¶å‡½æ•°æ± ä¸­çš„funcå·²ç»æ·»åŠ äº†å‚æ•°åˆ—è¡¨
 	funcNode func = funcPool[funcName];
 
-	//¸üĞÂBlockÖĞfuncµÄ²ÎÊıÁĞ±í
+	//æ›´æ–°Blockä¸­funcçš„å‚æ•°åˆ—è¡¨
 	funBlock.func = func;
-	//·ÖÎöº¯ÊıµÄÕıÎÄ
+	//åˆ†æå‡½æ•°çš„æ­£æ–‡
 	praser_compound_stmt(compound_stmt->left->right);
 
-	//º¯Êı½áÊøºó£¬µ¯³öÏàÓ¦µÄblock
+	//å‡½æ•°ç»“æŸåï¼Œå¼¹å‡ºç›¸åº”çš„block
 	blockStack.pop_back();
 
 }
 
-//¹æÔò 8	¶à²ÎÊı´¦Àí
+//è§„åˆ™ 8	å¤šå‚æ•°å¤„ç†
 void Praser::praser_param_list(struct AST* node,string funcName) {
 	if (node->left->type == "param-list") {
 		praser_param_list(node->left, funcName);
@@ -125,33 +125,33 @@ void Praser::praser_param_list(struct AST* node,string funcName) {
 	}
 }
 
-//¹æÔò 9	»ñÈ¡µ¥¸öĞÎ²ÎÄÚÈİ
+//è§„åˆ™ 9	è·å–å•ä¸ªå½¢å‚å†…å®¹
 void Praser::praser_param(struct AST* node, string funcName) {
 
-	AST* type_specifier = node->left;	//²ÎÊıÀàĞÍ½áµã
-	AST* ID = node->left->right;		//²ÎÊıÃû³Æ½áµã
+	AST* type_specifier = node->left;	//å‚æ•°ç±»å‹ç»“ç‚¹
+	AST* ID = node->left->right;		//å‚æ•°åç§°ç»“ç‚¹
 
-	string typeName = type_specifier->left->text;		//²ÎÊıÀàĞÍ
-	string varName = ID->text;		//²ÎÊıÃû³Æ
+	string typeName = type_specifier->left->text;		//å‚æ•°ç±»å‹
+	string varName = ID->text;		//å‚æ•°åç§°
 
 	varNode newnode;
 	newnode.name = varName;
 	newnode.type = typeName;
 	newnode.num = varNum++;			
 
-	blockStack.back().func.paralist.push_back(newnode);	//±äÁ¿¼ÓÈë´úÂë³ØÖĞµÄº¯Êı¿éµÄĞÎ²ÎÁĞ±íÖĞ
-	cout<<"Debug:³É¹¦½«²ÎÊı:"<<varName<<"Ìí¼Óµ½:"<<funcName<<endl;
+	blockStack.back().func.paralist.push_back(newnode);	//å˜é‡åŠ å…¥ä»£ç æ± ä¸­çš„å‡½æ•°å—çš„å½¢å‚åˆ—è¡¨ä¸­
+	cout<<"Debug:æˆåŠŸå°†å‚æ•°:"<<varName<<"æ·»åŠ åˆ°:"<<funcName<<endl;
 
-	funcPool[funcName].paralist.push_back(newnode);		//±äÁ¿¼ÓÈëº¯Êı³ØÖĞµÄº¯Êı¿éµÄĞÎ²ÎÁĞ±íÖĞ
+	funcPool[funcName].paralist.push_back(newnode);		//å˜é‡åŠ å…¥å‡½æ•°æ± ä¸­çš„å‡½æ•°å—çš„å½¢å‚åˆ—è¡¨ä¸­
 	
-	blockStack.back().varMap.insert({varName,newnode});	//½«º¯ÊıµÄĞÎ²ÎÌí¼Óµ½µ±Ç°¿éµÄ±äÁ¿³ØÖĞ
+	blockStack.back().varMap.insert({varName,newnode});	//å°†å‡½æ•°çš„å½¢å‚æ·»åŠ åˆ°å½“å‰å—çš„å˜é‡æ± ä¸­
 	addCode("PARAM_IN var" + inttostr(newnode.num));	
 }
 
-//¹æÔò10	´¦ÀíÓï¾ä¿é
+//è§„åˆ™10	å¤„ç†è¯­å¥å—
 void Praser::praser_compound_stmt(struct AST* node) {
-	//¼ÌĞø·ÖÎö´¦Àícompound_stmt
-	//¶ÔÓÚ{}¿éÖĞµÄ´úÂë£¬´´½¨Ò»¸öĞÂµÄ¿é£¬ĞÂµÄÃüÃû¿Õ¼ä
+	//ç»§ç»­åˆ†æå¤„ç†compound_stmt
+	//å¯¹äº{}å—ä¸­çš„ä»£ç ï¼Œåˆ›å»ºä¸€ä¸ªæ–°çš„å—ï¼Œæ–°çš„å‘½åç©ºé—´
 	Block newblock;
 	blockStack.push_back(newblock);
 	
@@ -161,44 +161,44 @@ void Praser::praser_compound_stmt(struct AST* node) {
 	blockStack.pop_back();
 }
 
-//¹æÔò 4	½âÎö±äÁ¿ÉùÃ÷
+//è§„åˆ™ 4	è§£æå˜é‡å£°æ˜
 void Praser::praser_var_declaration(struct AST *node) {
 	
-	cout<<"Debug:¿ªÊ¼½âÎö praser_var_declaration"<<endl;
+	cout<<"Debug:å¼€å§‹è§£æ praser_var_declaration"<<endl;
 
-	AST* type_specifier = node->left;	//²ÎÊıÀàĞÍ½áµã
-	AST* ID = node->left->right;		//²ÎÊıÃû³Æ½áµã
+	AST* type_specifier = node->left;	//å‚æ•°ç±»å‹ç»“ç‚¹
+	AST* ID = node->left->right;		//å‚æ•°åç§°ç»“ç‚¹
 
-	string typeName = type_specifier->left->text;		//²ÎÊıÀàĞÍ
-	string varName = ID->text;		//²ÎÊıÃû³Æ
+	string typeName = type_specifier->left->text;		//å‚æ•°ç±»å‹
+	string varName = ID->text;		//å‚æ•°åç§°
 			
 	if ( blockStack.back().varMap.find(varName) == blockStack.back().varMap.end() ) {
 		varNode newnode;
 		newnode.name = varName;
 		newnode.type = typeName;
 		newnode.num = varNum++;
-		blockStack.back().varMap.insert({varName, newnode});	//±äÁ¿¼ÓÈë´úÂë³Ø±äÁ¿ÁĞ±íÖĞ
+		blockStack.back().varMap.insert({varName, newnode});	//å˜é‡åŠ å…¥ä»£ç æ± å˜é‡åˆ—è¡¨ä¸­
 	}
 	else{
-		error(node->left->right->line, "±äÁ¿ÖØ¸´¶¨Òå");
+		error(node->left->right->line, "å˜é‡é‡å¤å®šä¹‰");
 	}
 
 	return ;
 }
 
-//¹æÔò13	½âÎöstatementÓï¾ä
+//è§„åˆ™13	è§£æstatementè¯­å¥
 void Praser::praser_statement(struct AST* node) {
 	struct AST* next = node->left;
-	if(node->left->type == "expression-stmt") {//µ¥¸ö;»òÕß expression ';'
+	if(node->left->type == "expression-stmt") {//å•ä¸ª;æˆ–è€… expression ';'
 		praser_expression_stmt(node->left);
 	}
-	else if (node->left->type == "compound-stmt") {//¸´ºÏÓï¾ä  {¡£¡£¡£} 
+	else if (node->left->type == "compound-stmt") {//å¤åˆè¯­å¥  {ã€‚ã€‚ã€‚} 
 		praser_compound_stmt(node->left);
 	}
-	else if (node->left->type == "selection-stmt") { // ifÓï¾ä
+	else if (node->left->type == "selection-stmt") { // ifè¯­å¥
 		praser_selection_stmt(node->left);
 	}
-	else if (node->left->type == "iteration-stmt") {//µü´úÓï¾ä while
+	else if (node->left->type == "iteration-stmt") {//è¿­ä»£è¯­å¥ while
 		praser_iteration_stmt(node->left);
 	}
 	else if (node->left->type == "return-stmt") { //return
@@ -206,17 +206,17 @@ void Praser::praser_statement(struct AST* node) {
 	}
 }
 
-//¹æÔò 14	±í´ïÊ½Óï¾ä
+//è§„åˆ™ 14	è¡¨è¾¾å¼è¯­å¥
 void Praser::praser_expression_stmt(struct AST *node) {
 	if (node->left->type == "expression") {
 		praser_expression(node->left);
 	}
 	else if(node->left->type == ";"){
-		//¿ÕÓï¾ä µ¥¸ö;
+		//ç©ºè¯­å¥ å•ä¸ª;
 	}
 }	
 
-//¹æÔò 18	½âÎöexpression
+//è§„åˆ™ 18	è§£æexpression
 varNode Praser::praser_expression(struct AST* node) {
 	if (node->left->type == "var") {
 		return praser_assignment_expression(node->left);
@@ -226,12 +226,12 @@ varNode Praser::praser_expression(struct AST* node) {
 	}
 }
 
-//¹æÔò 15	½âÎöifÓï¾ä
+//è§„åˆ™ 15	è§£æifè¯­å¥
 void Praser::praser_selection_stmt(struct AST* node) {
-	cout<<"Debug:142 ¿ªÊ¼½âÎöIFÓï¾ä£º"<<node->left->type<<endl;
+	cout<<"Debug:142 å¼€å§‹è§£æIFè¯­å¥ï¼š"<<node->left->type<<endl;
 	if (node->left->type == "if") {
 		if (node->left->right->right->right->right->right == NULL) {
-			//Ìí¼ÓÒ»¸öĞÂµÄblock  Ã»ÓĞelseÓï¾ä
+			//æ·»åŠ ä¸€ä¸ªæ–°çš„block  æ²¡æœ‰elseè¯­å¥
 			Block newblock;
 			blockStack.push_back(newblock);
 
@@ -251,12 +251,12 @@ void Praser::praser_selection_stmt(struct AST* node) {
 			
 			addCode(label2 + ":");
 
-			//µ¯³öÌí¼ÓµÄblock
+			//å¼¹å‡ºæ·»åŠ çš„block
 			blockStack.pop_back();
 
 		}
 		else if (node->left->right->right->right->right->right->type == "else") {
-			//Ìí¼ÓÒ»¸öĞÂµÄblock
+			//æ·»åŠ ä¸€ä¸ªæ–°çš„block
 			Block newblock1;
 			blockStack.push_back(newblock1);
 
@@ -277,7 +277,7 @@ void Praser::praser_selection_stmt(struct AST* node) {
 			praser_statement(statement1);
 			
 			addCode("GOTO " + label3);
-			//µ¯³öÌí¼ÓµÄblock
+			//å¼¹å‡ºæ·»åŠ çš„block
 			blockStack.pop_back();
 
 			//else
@@ -295,24 +295,24 @@ void Praser::praser_selection_stmt(struct AST* node) {
 		}
 	}
 	else{
-		cout<<"Debug:dsa praser_selection_stmt,Î´¶¨ÒåµÄÓï¾ä£º"<<node->left->type<<endl;
+		cout<<"Debug:dsa praser_selection_stmt,æœªå®šä¹‰çš„è¯­å¥ï¼š"<<node->left->type<<endl;
 	}
 }
 
-//¹æÔò 16	½âÎöwhileÓï¾ä
+//è§„åˆ™ 16	è§£æwhileè¯­å¥
 void Praser::praser_iteration_stmt(struct AST* node) {
 	if (node->left->type == "While") {
 
-		//Ìí¼ÓÒ»¸öĞÂµÄblock
+		//æ·»åŠ ä¸€ä¸ªæ–°çš„block
 		Block newblock;
 		blockStack.push_back(newblock);
 
 		struct AST* expression = node->left->right->right;
 		struct AST* statement = node->left->right->right->right->right;
 
-		string label1 = getLabelName(); //ÅĞ¶ÏÓï¾äµÄ¿ªÊ¼
-		string label2 = getLabelName(); //Ñ­»·ÌåÓï¾ä
-		string label3 = getLabelName(); //Ñ­»·ÍâÓï¾ä
+		string label1 = getLabelName(); //åˆ¤æ–­è¯­å¥çš„å¼€å§‹
+		string label2 = getLabelName(); //å¾ªç¯ä½“è¯­å¥
+		string label3 = getLabelName(); //å¾ªç¯å¤–è¯­å¥
 
 		blockStack.back().continueLabelname = label1;
 		blockStack.back().breakLabelname = label3;
@@ -331,15 +331,15 @@ void Praser::praser_iteration_stmt(struct AST* node) {
 		addCode("GOTO " + label1);
 		addCode(label3 + ":");
 		
-		//µ¯³öÌí¼ÓµÄblock
+		//å¼¹å‡ºæ·»åŠ çš„block
 		blockStack.pop_back();
 	}
 	else{
-		cout<<"Debug:dsa praser_iteration_stmt,Î´¶¨ÒåµÄÓï¾ä£º"<<node->left->type<<endl;
+		cout<<"Debug:dsa praser_iteration_stmt,æœªå®šä¹‰çš„è¯­å¥ï¼š"<<node->left->type<<endl;
 	}
 }
 
-//¹æÔò 17	½âÎöreturnÓï¾ä
+//è§„åˆ™ 17	è§£æreturnè¯­å¥
 void Praser::praser_return_stmt(struct AST* node) {
 	if (node->left->type == "RETURN") {
 		string funcType = getFuncRType();
@@ -352,7 +352,7 @@ void Praser::praser_return_stmt(struct AST* node) {
 			}
 			
 			if (rnode.type != funcType) {
-				cout <<"Dubug:123 ·µ»ØÀàĞÍ²»Æ¥Åä"<< rnode.type <<"and"<<funcType <<endl;
+				cout <<"Dubug:123 è¿”å›ç±»å‹ä¸åŒ¹é…"<< rnode.type <<"and"<<funcType <<endl;
 				error(node->left->right->line, "You must return a value with type:" + funcType);
 			}
 		}
@@ -363,14 +363,14 @@ void Praser::praser_return_stmt(struct AST* node) {
 			}
 		}
 		else {
-			cout<<"Dubug:dqw Î´ÖªµÄ´íÎó"<<endl;
+			cout<<"Dubug:dqw æœªçŸ¥çš„é”™è¯¯"<<endl;
 		}
 	}
 }
 
-//¹æÔò 18.1	¸³ÖµÓï¾ä½âÎö
-varNode Praser::praser_assignment_expression(struct AST* assign_exp) {	//·µ»Ø±äÁ¿½Úµã
-	cout<<"Debug:¿ªÊ¼½âÎö¸³ÖµÓï¾ä:"<<assign_exp->type<<endl;
+//è§„åˆ™ 18.1	èµ‹å€¼è¯­å¥è§£æ
+varNode Praser::praser_assignment_expression(struct AST* assign_exp) {	//è¿”å›å˜é‡èŠ‚ç‚¹
+	cout<<"Debug:å¼€å§‹è§£æèµ‹å€¼è¯­å¥:"<<assign_exp->type<<endl;
 	
 	struct AST* primary_exp=assign_exp;
 	string op = primary_exp->right->type;
@@ -384,17 +384,17 @@ varNode Praser::praser_assignment_expression(struct AST* assign_exp) {	//·µ»Ø±äÁ
 		node3 = node2;
 	}
 
-	if( node3.num < 0){	//ÊÇÁÙÊ±±äÁ¿ Èç a=1+1;
+	if( node3.num < 0){	//æ˜¯ä¸´æ—¶å˜é‡ å¦‚ a=1+1;
 		addCode("var"+ inttostr(node1.num) +" = "+ node3.name);
 	}
-	else{				//ÊÇÒÑÖª±äÁ¿ Èç a=b;
+	else{				//æ˜¯å·²çŸ¥å˜é‡ å¦‚ a=b;
 		addCode("var"+ inttostr(node1.num) +" = var"+inttostr(node3.num));
 	}		
 
 	return node1;		
 }
 
-//¹æÔò 19
+//è§„åˆ™ 19
 varNode Praser::praser_var(struct AST* primary_exp) {
 	if (primary_exp->left->type == "ID") {
 		string content = primary_exp->left->text;
@@ -406,9 +406,9 @@ varNode Praser::praser_var(struct AST* primary_exp) {
 	}
 }
 
-//¹æÔò 20
+//è§„åˆ™ 20
 varNode Praser::praser_simple_expression(struct AST* assign_exp){
-	cout<<"Debug:czxc ¿ªÊ¼½âÎö±í´ïÊ½:"<<assign_exp->type<<endl;
+	cout<<"Debug:czxc å¼€å§‹è§£æè¡¨è¾¾å¼:"<<assign_exp->type<<endl;
 	
 	if(assign_exp->left->right == NULL)
 		return praser_additive_expression(assign_exp->left);
@@ -419,7 +419,7 @@ varNode Praser::praser_simple_expression(struct AST* assign_exp){
 	}
 }
 
-//¹æÔò 21	
+//è§„åˆ™ 21	
 varNode Praser::praser_relop(varNode additive_expression_1, AST* relop, varNode additive_expression_2){
 	if(relop->type == "EQ" || relop->type == "NE" || relop->type == "BE" || relop->type == "AE" || 
 		relop->type == "<" || relop->type == ">")
@@ -436,7 +436,7 @@ varNode Praser::praser_relop(varNode additive_expression_1, AST* relop, varNode 
 		else op = relop->type;
 
 		if (additive_expression_1.type != additive_expression_1.type) {
-			error(relop->line, "ÀàĞÍ²»Æ¥Åä£¡");
+			error(relop->line, "ç±»å‹ä¸åŒ¹é…ï¼");
 		}
 
 		string tempname = "temp" + inttostr(tempNum);
@@ -449,7 +449,7 @@ varNode Praser::praser_relop(varNode additive_expression_1, AST* relop, varNode 
 	}
 }
 
-//¹æÔò 22	
+//è§„åˆ™ 22	
 varNode Praser::praser_additive_expression(struct AST* assign_exp){
 	if(assign_exp->left->right == NULL)
 		return praser_term(assign_exp->left);
@@ -460,11 +460,11 @@ varNode Praser::praser_additive_expression(struct AST* assign_exp){
 	}
 }
 
-//¹æÔò 23
+//è§„åˆ™ 23
 varNode Praser::praser_addop(varNode additive_expression, AST* addop, varNode term){
 	if(addop->type == "+" || addop->type == "-"){
 		if (additive_expression.type != term.type) {
-			cout<<"Debug:²»Í¬µÄ²ÎÊıÀàĞÍ£¨+£©£º"<< additive_expression.type << "ºÍ" <<term.type<<endl;
+			cout<<"Debug:ä¸åŒçš„å‚æ•°ç±»å‹ï¼ˆ+ï¼‰ï¼š"<< additive_expression.type << "å’Œ" <<term.type<<endl;
 			error(addop->line, "Different type for two variables.");
 		}
 
@@ -478,7 +478,7 @@ varNode Praser::praser_addop(varNode additive_expression, AST* addop, varNode te
 	}
 }
 
-//¹æÔò 24
+//è§„åˆ™ 24
 varNode Praser::praser_term(struct AST* assign_exp){
 	if(assign_exp->left->right == NULL)
 		return praser_factor(assign_exp->left);
@@ -489,11 +489,11 @@ varNode Praser::praser_term(struct AST* assign_exp){
 	}
 }
 
-//¹æÔò 25
+//è§„åˆ™ 25
 varNode Praser::praser_mulop(varNode term, AST* mulop, varNode factor){
 	if(mulop->type == "*" || mulop->type == "/"){
 		if (term.type != factor.type) {
-			cout<<"Debug:²»Í¬µÄ²ÎÊıÀàĞÍ£¨+£©£º"<< term.type << "ºÍ" <<factor.type<<endl;
+			cout<<"Debug:ä¸åŒçš„å‚æ•°ç±»å‹ï¼ˆ+ï¼‰ï¼š"<< term.type << "å’Œ" <<factor.type<<endl;
 			error(mulop->line, "Different type for two variables.");
 		}
 
@@ -507,7 +507,7 @@ varNode Praser::praser_mulop(varNode term, AST* mulop, varNode factor){
 	}
 }
 
-//¹æÔò 26
+//è§„åˆ™ 26
 varNode Praser::praser_factor(struct AST* assign_exp){
 
 	if(assign_exp->left->type == "("){
@@ -530,17 +530,17 @@ varNode Praser::praser_factor(struct AST* assign_exp){
 	}
 }
 
-//¹æÔò 27 28
+//è§„åˆ™ 27 28
 varNode Praser::praser_call(struct AST* call_exp) {
 
 		string funcName = call_exp->left->text;
 		varNode newNode;
-		cout<<"Debug:³¢ÊÔµ÷ÓÃº¯Êı£º"<<funcName<<endl;
+		cout<<"Debug:å°è¯•è°ƒç”¨å‡½æ•°ï¼š"<<funcName<<endl;
 		if (funcPool.find(funcName) == funcPool.end()) {
 			error(call_exp->left->line, "Undefined function " + funcName);
 		}
 
-		//´¦Àí²ÎÊı
+		//å¤„ç†å‚æ•°
 		if (call_exp->left->right->right->left != NULL) {
 			AST* argument_exp_list = call_exp->left->right->right->left;
 			praser_argument_expression_list(argument_exp_list, funcName);
@@ -548,7 +548,7 @@ varNode Praser::praser_call(struct AST* call_exp) {
 
 		funcNode func = funcPool[funcName];
 		
-		//·µ»ØÖµ
+		//è¿”å›å€¼
 		if (func.rtype == "VOID") {
 			addCode("CALL " + funcName);
 		}
@@ -564,13 +564,13 @@ varNode Praser::praser_call(struct AST* call_exp) {
 		return newNode;
 }
 
-//¹æÔò 29
+//è§„åˆ™ 29
 void Praser::praser_argument_expression_list(struct AST* node, string funcName) {
 	AST* argu_exp_list = node->left;
 	funcNode func = funcPool[funcName];
 	int i = 0;
 	while (argu_exp_list->type == "arg-list") {
-		//²»¶ÏÑ­»·£¬Ö±µ½arg-listÖ¸ÏòµÄ½áµãÎªexpression
+		//ä¸æ–­å¾ªç¯ï¼Œç›´åˆ°arg-listæŒ‡å‘çš„ç»“ç‚¹ä¸ºexpression
 		varNode rnode = praser_expression(argu_exp_list->right->right);
 
 		if(rnode.num<0){
@@ -586,7 +586,7 @@ void Praser::praser_argument_expression_list(struct AST* node, string funcName) 
 		}
 	}
 
-	//×îºóÒ»¸ö²ÎÊı
+	//æœ€åä¸€ä¸ªå‚æ•°
 	varNode rnode = praser_expression(argu_exp_list);
 	if(rnode.num<0){
 			addCode("PARAM_PREP "+rnode.name);
@@ -602,16 +602,16 @@ void Praser::praser_argument_expression_list(struct AST* node, string funcName) 
 	}
 }
 
-//´´½¨ÁÙÊ±±äÁ¿
+//åˆ›å»ºä¸´æ—¶å˜é‡
 struct varNode Praser::createTempVar(string name, string type) {
 	varNode var;
 	var.name = name;
 	var.type = type;
-	var.num = -1;	//ÒÔ-1±ê¼ÇÁÙÊ±±äÁ¿
+	var.num = -1;	//ä»¥-1æ ‡è®°ä¸´æ—¶å˜é‡
 	return var;
 }
 
-//¸ù¾İ±äÁ¿Ãû£¬·µ»ØÒ»¸övarNode
+//æ ¹æ®å˜é‡åï¼Œè¿”å›ä¸€ä¸ªvarNode
 struct varNode Praser::lookupNode(string name) {
 	int N = blockStack.size();
 	for (int i = N - 1; i >= 0; i--) {
@@ -623,13 +623,13 @@ struct varNode Praser::lookupNode(string name) {
 	return temp;
 }
 
-//Ìí¼Ó»ã±à´úÂë
+//æ·»åŠ æ±‡ç¼–ä»£ç 
 void Praser::addCode(string str)
 {
 	codeList.push_back(str);
 }
 
-//Êä³ö»ã±à´úÂë
+//è¾“å‡ºæ±‡ç¼–ä»£ç 
 void Praser::print_code() {
 	for (string s : codeList)
 	{
@@ -641,7 +641,7 @@ void Praser::print_code() {
 	}
 }
 
-//·µ»Øº¯Êı·µ»ØÖµÀàĞÍ
+//è¿”å›å‡½æ•°è¿”å›å€¼ç±»å‹
 string Praser::getFuncRType() {
 	int N = blockStack.size();
 	for (int i = N - 1; i >= 0; i--) {
@@ -651,12 +651,12 @@ string Praser::getFuncRType() {
 	return "";
 }
 
-//·µ»ØĞĞÊı
+//è¿”å›è¡Œæ•°
 string Praser::getLabelName(){
 	return "label_" + inttostr(labelNum++);
 }
 
-//»ñÈ¡½áµãÃû
+//è·å–ç»“ç‚¹å
 string Praser::getNodeName(varNode node) {
 
 	if (node.num < 0)
@@ -667,7 +667,7 @@ string Praser::getNodeName(varNode node) {
 		return ("var" + inttostr(node.num));
 }
 
-//·µ»Ø¸ñÊ½»¯±í´ïÊ½
+//è¿”å›æ ¼å¼åŒ–è¡¨è¾¾å¼
 string Praser::Gen_IR(string tempname, string op, varNode node1, varNode node2) {
 	string result = tempname + " = ";
 
@@ -678,7 +678,7 @@ string Praser::Gen_IR(string tempname, string op, varNode node1, varNode node2) 
 	else
 		result += "var" + inttostr(node1.num);
 
-	result += " " + op + " ";	//¿Õ¸ñºÍÔËËã·û
+	result += " " + op + " ";	//ç©ºæ ¼å’Œè¿ç®—ç¬¦
 
 	if (node2.num < 0)
 	{
@@ -689,7 +689,7 @@ string Praser::Gen_IR(string tempname, string op, varNode node1, varNode node2) 
 	return result;
 }
 
-//Êä³ö´íÎóĞÅÏ¢
+//è¾“å‡ºé”™è¯¯ä¿¡æ¯
 void Praser::error(int line, string error) {
 	cout << "line:" << line << "[Error] "<<error << endl;
 	exit(1);
