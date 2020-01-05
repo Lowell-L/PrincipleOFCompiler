@@ -229,7 +229,7 @@ varNode Praser::praser_expression(struct AST* node) {
 //规则 15	解析if语句
 void Praser::praser_selection_stmt(struct AST* node) {
 	cout<<"Debug:142 开始解析IF语句："<<node->left->type<<endl;
-	if (node->left->type == "if") {
+	if (node->left->type == "IF") {
 		if (node->left->right->right->right->right->right == NULL) {
 			//添加一个新的block  没有else语句
 			Block newblock;
@@ -301,7 +301,7 @@ void Praser::praser_selection_stmt(struct AST* node) {
 
 //规则 16	解析while语句
 void Praser::praser_iteration_stmt(struct AST* node) {
-	if (node->left->type == "While") {
+	if (node->left->type == "WHILE") {
 
 		//添加一个新的block
 		Block newblock;
