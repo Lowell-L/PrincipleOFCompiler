@@ -1,6 +1,7 @@
 %{
 #include <stdio.h>
 #include "AST.h"
+#include "Praser.h"
 
 extern int yylineno;	//当前行号
 extern FILE *yyin;		//读取文件指针
@@ -213,9 +214,7 @@ void yyerror(char const*s)
 	printf("error in line %d: %s\n", yylineno, s);
 }
 
-int main(argc, argv)
-int argc;
-char **argv;
+int main(int argc, char *argv[])
 {
 	yyin = stdin;
 	if(argc > 1)
@@ -228,6 +227,12 @@ char **argv;
 	}
 
 	yyparse();
+	printf("---------------------------lex_end----------------------------\n");
+
+	print_AST(root,0);
+	printf("-----------------------print_AST_end--------------------------\n");
+
+//	Praser praser(root);
 	fclose(yyin);
 	return 0;
 }
