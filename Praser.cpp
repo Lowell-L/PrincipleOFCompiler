@@ -20,7 +20,7 @@ void Praser::praserInit() { //初始化
 	//加入内置函数 input：读入一个int 并返回  output：打印一个int值
 	funcNode output;
 	output.name = "output";
-	output.rtype = "void";
+	output.rtype = "VOID";
 	varNode pnode;
 	pnode.type = "int";
 	output.paralist.push_back(pnode);
@@ -28,7 +28,7 @@ void Praser::praserInit() { //初始化
 
 	funcNode input;
 	input.name = "input";
-	input.rtype = "input";
+	input.rtype = "INT";
 	funcPool.insert({"input",input});
 
 	praserAST(root);		//开始分析语法树
@@ -216,19 +216,34 @@ void Praser::praser_expression_stmt(struct AST *node) {
 	}
 }	
 
-//规则 18	解析expression
+//规则 18	解析expression ***********************************
 varNode Praser::praser_expression(struct AST* node) {
+	cout<<"Debug:开始解析表达式"<<node->type<<endl;
 	if (node->left->type == "var") {
-		return praser_assignment_expression(node->left);
+		
+		//return praser_assignment_expression(node->left);
+
+		struct AST* next_assign_exp = node->left->right->right;
+		varNode node1 = praser_var(node->left);
+		varNode node2 = praser_expression(next_assign_exp);
+		if( node2.num<0){//是临时变量 如 a=1+1;
+			//cout<<"start"<<endl;
+			addCode("var"+ inttostr(node1.num) +" = "+ node2.name);
+			//cout<<"finish!"<<endl;
+		}
+		else{//是已知变量 如 a=b;
+			addCode("var"+ inttostr(node1.num) +" = var"+inttostr(node2.num));
+		}		
+		return node1;
 	}
-	else if(node->left->type == "simple_expression") {
+	else if(node->left->type == "simple-expression") {
 		return praser_simple_expression(node->left);
 	}
 }
 
 //规则 15	解析if语句
 void Praser::praser_selection_stmt(struct AST* node) {
-	cout<<"Debug:142 开始解析IF语句："<<node->left->type<<endl;
+	cout<<"Debug:开始解析IF语句："<<node->left->type<<endl;
 	if (node->left->type == "IF") {
 		if (node->left->right->right->right->right->right == NULL) {
 			//添加一个新的block  没有else语句
@@ -255,7 +270,7 @@ void Praser::praser_selection_stmt(struct AST* node) {
 			blockStack.pop_back();
 
 		}
-		else if (node->left->right->right->right->right->right->type == "else") {
+		else if (node->left->right->right->right->right->right->type == "ELSE") {
 			//添加一个新的block
 			Block newblock1;
 			blockStack.push_back(newblock1);
@@ -291,8 +306,8 @@ void Praser::praser_selection_stmt(struct AST* node) {
 			addCode(label3 + ":");
 
 			blockStack.pop_back();
-
 		}
+		else cout<<"chucuo!"<<endl;
 	}
 	else{
 		cout<<"Debug:dsa praser_selection_stmt,未定义的语句："<<node->left->type<<endl;
@@ -371,51 +386,70 @@ void Praser::praser_return_stmt(struct AST* node) {
 //规则 18.1	赋值语句解析
 varNode Praser::praser_assignment_expression(struct AST* assign_exp) {	//返回变量节点
 	cout<<"Debug:开始解析赋值语句:"<<assign_exp->type<<endl;
-	
+	cout<<"abc";
+/*	
+	varNode node1, node2;
+
 	struct AST* primary_exp=assign_exp;
 	string op = primary_exp->right->type;
 	struct AST* next_assign_exp = primary_exp->right->right;
-
-	varNode node1 = praser_var(primary_exp);
-	varNode node2 = praser_expression(next_assign_exp);
-	varNode node3;
-
-	if (op == "=") {
-		node3 = node2;
-	}
-
-	if( node3.num < 0){	//是临时变量 如 a=1+1;
-		addCode("var"+ inttostr(node1.num) +" = "+ node3.name);
+	
+	node1 = praser_var(primary_exp);
+	node2 = praser_expression(next_assign_exp);
+	
+	cout<<"0"<<endl;
+	string code1 = "var" + inttostr(node1.num) + " = "+ node2.name;
+	cout<<"123"<<endl;
+	string code2 = "var"+ inttostr(node1.num) +" = var"+inttostr(node2.num);
+	if( node2.num < 0){	//是临时变量 如 a=1+1;
+		addCode(code1);
 	}
 	else{				//是已知变量 如 a=b;
-		addCode("var"+ inttostr(node1.num) +" = var"+inttostr(node3.num));
+		addCode(code2);
 	}		
+cout<<"456"<<endl;
+	return node1;	
+*/
+		string op = assign_exp->right->left->type;
+		struct AST* next_assign_exp = assign_exp->right->right;
+		
+		varNode node1 = praser_var(assign_exp);
+		
+		varNode node2 = praser_expression(next_assign_exp);
+		
+		if( praser_expression(next_assign_exp).num<0){//是临时变量 如 a=1+1;
+			addCode("var"+ inttostr(praser_var(assign_exp).num) +" = "+ praser_expression(next_assign_exp).name);
+		}
+		else{//是已知变量 如 a=b;
+			addCode("var"+ inttostr(praser_var(assign_exp).num) +" = var"+inttostr(praser_expression(next_assign_exp).num));
+		}		
 
-	return node1;		
+		return praser_var(assign_exp);
 }
 
 //规则 19
 varNode Praser::praser_var(struct AST* primary_exp) {
+	cout<<"Debug:开始解析变量"<<endl;
 	if (primary_exp->left->type == "ID") {
 		string content = primary_exp->left->text;
 		varNode rnode = lookupNode(content);
 		if (rnode.num < 0) {
 			error(primary_exp->left->line, "Undefined variable " + content);
 		}
+		cout<<"Debug:解析变量完成"<<endl;
 		return rnode;
 	}
 }
 
 //规则 20
 varNode Praser::praser_simple_expression(struct AST* assign_exp){
-	cout<<"Debug:czxc 开始解析表达式:"<<assign_exp->type<<endl;
-	
+	cout<<"Debug:开始解析表达式:"<<assign_exp->type<<endl;
 	if(assign_exp->left->right == NULL)
 		return praser_additive_expression(assign_exp->left);
 	else{
 		varNode additive_expression_1 = praser_additive_expression(assign_exp->left);
 		varNode additive_expression_2 = praser_additive_expression(assign_exp->left->right->right);
-		return praser_relop(additive_expression_1, assign_exp->left->right, additive_expression_2);
+		return praser_relop(additive_expression_1, assign_exp->left->right->left, additive_expression_2);
 	}
 }
 
@@ -443,7 +477,7 @@ varNode Praser::praser_relop(varNode additive_expression_1, AST* relop, varNode 
 		++tempNum;
 		varNode newnode = createTempVar(tempname, "int");
 		blockStack.back().varMap.insert({ tempname,newnode});
-		addCode(Gen_IR(tempname, op, additive_expression_1, additive_expression_1));
+		addCode(Gen_IR(tempname, op, additive_expression_1, additive_expression_2));
 
 		return newnode;
 	}
@@ -451,41 +485,45 @@ varNode Praser::praser_relop(varNode additive_expression_1, AST* relop, varNode 
 
 //规则 22	
 varNode Praser::praser_additive_expression(struct AST* assign_exp){
+	cout<<"Debug:开始解析表达式:"<<assign_exp->type<<endl;
 	if(assign_exp->left->right == NULL)
 		return praser_term(assign_exp->left);
 	else{
 		varNode additive_expression = praser_additive_expression(assign_exp->left);
 		varNode term = praser_term(assign_exp->left->right->right);
-		return praser_addop(additive_expression, assign_exp->left->right, term);
+		return praser_addop(additive_expression, assign_exp->left->right->left, term);
 	}
 }
 
 //规则 23
 varNode Praser::praser_addop(varNode additive_expression, AST* addop, varNode term){
+	//cout<<addop->type<<endl;
 	if(addop->type == "+" || addop->type == "-"){
 		if (additive_expression.type != term.type) {
 			cout<<"Debug:不同的参数类型（+）："<< additive_expression.type << "和" <<term.type<<endl;
 			error(addop->line, "Different type for two variables.");
 		}
-
 		string tempname = "temp" + inttostr(tempNum);
 		++tempNum;
+		
 		varNode newnode = createTempVar(tempname, additive_expression.type);
 		blockStack.back().varMap.insert({ tempname,newnode});
 
 		addCode(Gen_IR(tempname,addop->type, additive_expression, term));
+		
 		return newnode;
-	}
+	}else cout<<"出错"<<endl;
 }
 
 //规则 24
 varNode Praser::praser_term(struct AST* assign_exp){
+	cout<<"Debug:开始解析表达式:"<<assign_exp->type<<endl;
 	if(assign_exp->left->right == NULL)
 		return praser_factor(assign_exp->left);
 	else{
 		varNode term = praser_term(assign_exp->left);
 		varNode factor = praser_factor(assign_exp->left->right->right);
-		return praser_mulop(term, assign_exp->left->right, factor);
+		return praser_mulop(term, assign_exp->left->right->left, factor);
 	}
 }
 
@@ -509,7 +547,7 @@ varNode Praser::praser_mulop(varNode term, AST* mulop, varNode factor){
 
 //规则 26
 varNode Praser::praser_factor(struct AST* assign_exp){
-
+	cout<<"Debug:开始解析表达式:"<<assign_exp->type<<endl;
 	if(assign_exp->left->type == "("){
 		return praser_expression(assign_exp->left->right);
 	}
@@ -520,12 +558,14 @@ varNode Praser::praser_factor(struct AST* assign_exp){
 		return praser_call(assign_exp->left);
 	}
 	else if(assign_exp->left->type == "NUM"){
+		cout<<"Debug:开始解析NUM"<<endl;
 		string content = assign_exp->left->text;
 		string tempname = "temp" + inttostr(tempNum);
 		++tempNum;
 		varNode newNode = createTempVar(tempname, "int");
 		blockStack.back().varMap.insert({ tempname,newNode });
 		addCode(tempname + " = "  + content);
+		cout<<"Debug:解析NUM完成"<<endl;
 		return newNode;
 	}
 }
