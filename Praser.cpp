@@ -8,8 +8,8 @@ Praser::Praser(AST* root) {//构造函数
 	printf("---------------------debug_info_end---------------------------\n");
 	print_code();
 	printf("---------------------inner_code_end---------------------------\n");
-	//asmcode.CodeGen(codeList);
-	//asmcode.printCode();
+	asmcode.CodeGen(codeList);
+	asmcode.printCode();
 	printf("--------------------objcoed_gen_end---------------------------\n");
 }
 
@@ -18,18 +18,18 @@ void Praser::praserInit() { //初始化
 	blockStack.push_back(wholeBlock);  
 	
 	//加入内置函数 input：读入一个int 并返回  output：打印一个int值
-	funcNode output;
-	output.name = "output";
-	output.rtype = "VOID";
+	funcNode print;
+	print.name = "print";
+	print.rtype = "VOID";
 	varNode pnode;
 	pnode.type = "int";
-	output.paralist.push_back(pnode);
-	funcPool.insert({ "output", output });
+	print.paralist.push_back(pnode);
+	funcPool.insert({ "print", print });
 
-	funcNode input;
-	input.name = "input";
-	input.rtype = "INT";
-	funcPool.insert({"input",input});
+	funcNode scan;
+	scan.name = "scan";
+	scan.rtype = "INT";
+	funcPool.insert({"scan",scan});
 
 	praserAST(root);		//开始分析语法树
 

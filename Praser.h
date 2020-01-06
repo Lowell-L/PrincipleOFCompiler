@@ -2,7 +2,7 @@
 #define PRASER_H
 
 #include "AST.h"
-//#include "AsmCode.h"
+#include "AsmCode.h"
 using namespace std;
 
 class Praser {
@@ -13,7 +13,7 @@ public:
 	int labelNum = 0; 	//标签号
 	vector<string> codeList; //中间代码
 
-//	AsmCode asmcode; 	//x86代码生成对象
+	AsmCode asmcode; 	//x86代码生成对象
 
 	map<string, funcNode> funcPool;		//函数池（函数名--> 函数结点）
 	map<string, string> labelPool;  	//标签映射关系（统一把标签映射为lable_i的形式）
