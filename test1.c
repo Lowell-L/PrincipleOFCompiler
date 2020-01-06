@@ -1,5 +1,11 @@
 int main(void) {
 	int x;
-	x = 2*3;
+	int i;
+	x = 1;
+	i = 4;
+	while(i > 0){
+		x = x*i;
+		i = i-1;
+	}
 	print(x);
 }

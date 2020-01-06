@@ -156,8 +156,8 @@ void AsmCode::CodeGen(vector<string> CodeList){ //CodeList 指中间代码
                 flag=3; //表示两个字符的  大于等于  或 小于等于 或== 或!=运算
             }
 
-            char ch[6]={'+','-','*','/'};
-            for (int i=0;i<4;i++){
+            char ch[6]={'+','-','*','/','<','>'};
+            for (int i=0;i<6;i++){
                 if(s.find(ch[i])!=s.npos){
                     
                     op_pos2=s.find(ch[i]);
@@ -202,7 +202,7 @@ void AsmCode::CodeGen(vector<string> CodeList){ //CodeList 指中间代码
             else if(flag==2){
                 var2=s.substr(op_pos1+2,op_pos2-op_pos1-3);
                 var3=s.substr(op_pos2+2);
-                //cout<<var1 << var2<< var3<<endl;
+                //cout<<var1 <<"--"<< var2<<"--"<< var3<<endl;
                 mem2=varMap[var2];
                 mem3=varMap[var3];
                 addCode("MOV AX,"+mem2);

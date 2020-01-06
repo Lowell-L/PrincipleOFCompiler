@@ -65,7 +65,7 @@ while	{yylval.node = new_node("WHILE",0,yylineno); return(WHILE);}
 "/*"(([^\*]*(\*[^\/])?)*)"*/"		{ }//忽略注释
 [\n \t]	{ }	//忽略空白
 
-[a-zA-Z]+	{yylval.node = new_node("ID",0,yylineno); return(ID);}
+[a-zA-Z]([a-zA-Z]|[0-9])*	{yylval.node = new_node("ID",0,yylineno); return(ID);}
 [0-9]+		{yylval.node = new_node("NUM",0,yylineno); return(NUM);}
 
 %%
